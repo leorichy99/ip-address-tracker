@@ -1,8 +1,6 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-
-// Fix default marker icon issue in Leaflet + Webpack
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
@@ -17,17 +15,31 @@ const customIcon = new L.Icon({
 
 export default function IpMap({ lat, lng }) {
   if (lat == null || lng == null) return null;
+
+  // Detect mobile screen
+  const isMobile = window.innerWidth < 640;
+
   return (
-    <MapContainer center={[lat, lng]} zoom={13} className='relative w-full h-full' scrollWheelZoom={false}>
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <Marker position={[lat, lng]} icon={customIcon}>
-        <Popup>
-          IP Location
-        </Popup>
-      </Marker>
-    </MapContainer>
+    <div style={{ width: "100%", height: "100%" }}>
+      <MapContainer
+        center={[lat, lng]}
+        zoom={13}
+        style={{ height: "100%", width: "100%" }}
+        scrollWheelZoom={false}
+        zoomControl={false} // Disable default zoom control
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <Marker position={[lat, lng]} icon={customIcon}>
+          <Popup>
+            IP Location
+          </Popup>
+        </Marker>
+        {/* Place zoom controls at bottom right on mobile, top right on desktop */}
+        <ZoomControl position={isMobile ? "bottomright" : "topright"} />
+      </MapContainer>
+    </div>
   );
 }

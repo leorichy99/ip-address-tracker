@@ -1,7 +1,8 @@
 // import { useState } from 'react'
-import './App.css'
 import { useState, useEffect } from "react";
 import IpMap from "./components/IpMap";
+import LoadingSpinner from "./components/LoadingSpinner";
+import { Alert } from "antd";
 
 function App() {
   const [ipInfo, setIpInfo] = useState(null);
@@ -9,7 +10,6 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const apiKey = "at_z75XvocfqEDHLD1CLibbcnEzJZniH";
 
   // Validate IP address or domain
   const isValidInput = (input) => {
@@ -24,7 +24,7 @@ function App() {
   const fetchIpInfo = (query = "") => {
     setLoading(true);
     setError("");
-    let url = `https://geo.ipify.org/api/v2/country,city?apiKey=${apiKey}`;
+    let url = `https://geo.ipify.org/api/v2/country,city?apiKey=${import.meta.env.VITE_IPIFY_API_KEY}`;
     if (query) url += `&ipAddress=${query}`;
     fetch(url)
       .then(response => response.json())
@@ -34,6 +34,7 @@ function App() {
           setIpInfo(null);
         } else {
           setIpInfo(data);
+          console.log(data); // Log the fetched data for debugging
         }
         setLoading(false);
       })
@@ -62,75 +63,99 @@ function App() {
     fetchIpInfo(search.trim());
   };
 
+  // Add a loading spinner component (can be placed above App or inside App)
+
   return (
-    <div className="w-full h-screen">
+    <div className="w-full min-h-screen flex flex-col">
       {/* searchBar and ipinfo section */}
-      <div className="relative">
+      <div className="relative w-full flex-shrink-0">
         {/* search bar */}
-        <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center  p-4 bg-[url(/public/pattern-bg-desktop.png))] bg-cover min-h-48">
-          <h2 className="text-center text-3xl font-bold">IP Address Tracker</h2>
-          <div className="mt-4 flex justify-center w-full">
+        <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center p-4 bg-[url(/pattern-bg-desktop.png)] bg-cover min-h-48 sm:min-h-40 md:min-h-48">
+          <h2 className="text-center text-2xl sm:text-3xl font-bold">IP Address Tracker</h2>
+          <div className="mt-4 flex justify-center w-full gap-0">
             <input
-              className="p-2 bg-white text-black border-0 rounded-tl-sm rounded-bl-sm w-1/4"
+              className="p-2 bg-white text-gray-900 outline-none rounded-tl-sm rounded-bl-sm w-1/2 md:w-1/4 min-w-0 transition-all duration-200 placeholder-gray-500"
               type="text"
               name="search"
               id="search"
               placeholder="Search for any IP address or domain"
               value={search}
-              onChange={e => { setSearch(e.target.value); setError(""); }}
+              autoComplete="off"
+              onChange={e => {
+                setSearch(e.target.value);
+                setError("");
+              }}
+              style={{ border: "none" }} // Remove border
             />
             <button
               type="submit"
-              className="p-2 bg-black rounded-tr-sm rounded-br-sm transition-all duration-200 hover:bg-gray-800 hover:scale-105 cursor-pointer"
+              className="p-2 bg-black rounded-tr-sm rounded-br-sm transition-all duration-200 hover:bg-gray-800 hover:scale-105 cursor-pointer w-auto"
               style={{transition: 'all 0.2s'}}
             >
-              <img src="/public/icon-arrow.svg" alt="arrow"/>
+              <img src="/icon-arrow.svg" alt="arrow" className="mx-auto"/>
             </button>
           </div>
-          {error && (
-            <div className="mt-3 w-full flex justify-center">
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded shadow text-center max-w-md w-full animate-fade-in">
-                {error}
-              </div>
-            </div>
-          )}
         </form>
 
         {/* ipinfo */}
-        <div className="w-full flex justify-center z-10 relative" style={{marginTop: '-2.5rem'}}>
-          <div className="flex justify-between items-center p-4 rounded-md bg-white text-black w-full max-w-4xl mx-auto shadow-xl">
-            {/*ip address*/}
-            <span className="block">
-              <h2 className="text-black text-xs tracking-widest">IP ADDRESS</h2>
-              <h2 className="text-black text-2xl font-bold">{ipInfo?.ip || "-"}</h2>
-            </span>
-            {/*location*/}
-            <span className="block">
-              <h2 className="text-black text-xs tracking-widest">LOCATION</h2>
-              <h2 className="text-black text-xl font-bold">{ipInfo ? `${ipInfo.location.city}, ${ipInfo.location.region}, ${ipInfo.location.country}` : "-"}</h2>
-            </span>
-            {/*TIMEZONE*/}
-            <span className="block">
-              <h2 className="text-black text-xs tracking-widest">TIMEZONE</h2>
-              <h2 className="text-black text-xl font-bold">{ipInfo?.location?.timezone ? `UTC ${ipInfo.location.timezone}` : "-"}</h2>
-            </span>
-            {/*ISP*/}
-            <span className="block">
-              <h2 className="text-black text-xs tracking-widest">ISP</h2>
-              <h2 className="text-black text-xl font-bold">{ipInfo?.isp || "-"}</h2>
-            </span>
+        {ipInfo?.location && !loading && !error && (
+          <div
+            className="absolute w-full flex justify-center z-20 px-2 transition-all duration-500 opacity-0 translate-y-4"
+            style={{
+              marginTop: '-2.5rem',
+              pointerEvents: 'none',
+              opacity: ipInfo?.location && !loading && !error ? 1 : 0,
+              transform: ipInfo?.location && !loading && !error ? 'translateY(0)' : 'translateY(16px)',
+            }}
+          >
+            <div
+              className="flex flex-col md:flex-row flex-wrap justify-between items-center gap-2 sm:gap-4 p-2 sm:p-4 rounded-md bg-white text-black w-full max-w-4xl mx-auto shadow-xl"
+              style={{ pointerEvents: 'auto' }}
+            >
+              {/*ip address*/}
+              <span className="block w-full sm:w-auto text-center sm:text-left">
+                <h2 className="text-black text-[10px] sm:text-xs tracking-widest">IP ADDRESS</h2>
+                <h2 className="text-black text-lg sm:text-2xl font-bold break-all">{ipInfo?.ip || "-"}</h2>
+              </span>
+              {/*location*/}
+              <span className="block w-full sm:w-auto text-center sm:text-left">
+                <h2 className="text-black text-[10px] sm:text-xs tracking-widest">LOCATION</h2>
+                <h2 className="text-black text-base sm:text-xl font-bold break-all">{ipInfo ? `${ipInfo.location.city}, ${ipInfo.location.region}, ${ipInfo.location.country}` : "-"}</h2>
+              </span>
+              {/*TIMEZONE*/}
+              <span className="block w-full sm:w-auto text-center sm:text-left">
+                <h2 className="text-black text-[10px] sm:text-xs tracking-widest">TIMEZONE</h2>
+                <h2 className="text-black text-base sm:text-xl font-bold">{ipInfo?.location?.timezone ? `UTC ${ipInfo.location.timezone}` : "-"}</h2>
+              </span>
+              {/*ISP*/}
+              <span className="block w-full sm:w-auto text-center sm:text-left">
+                <h2 className="text-black text-[10px] sm:text-xs tracking-widest">ISP</h2>
+                <h2 className="text-black text-base sm:text-xl font-bold break-all">{ipInfo?.isp || "-"}</h2>
+              </span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* map section */}
-      <div className="flex-1 bg-white h-full mt-2">
-        {loading ? (
-          <div>Loading map...</div>
+      <div className="flex-1 w-full relative z-10 flex">
+        {error ? (
+          <div className="flex justify-center items-center h-full w-full">
+            <Alert
+              message="Error"
+              description={error}
+              type="error"
+              showIcon
+              className="w-full max-w-md"
+              style={{ fontSize: 18 }}
+            />
+          </div>
+        ) : loading ? (
+          <LoadingSpinner />
         ) : ipInfo?.location ? (
-          <IpMap lat={ipInfo.location.lat} lng={ipInfo.location.lng} />
+          <IpMap lat={ipInfo.location.lat} lng={ipInfo.location.lng}/>
         ) : (
-          <div>No map data</div>
+          <LoadingSpinner />
         )}
       </div>
     </div>
