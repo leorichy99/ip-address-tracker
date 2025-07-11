@@ -161,3 +161,14 @@ Feel free to open an issue or submit a PR to improve the project.
 ---
 
 **Enjoy tracking IPs and domains! 🚀**
+
+### Screenshot
+
+![](./public/desktop-preview.png)
+![](./public/mobile-preview.png)
+
+Add screenshots of your solution above. The first image shows the desktop view, and the second shows the mobile view.  
+You can use browser tools or extensions to capture and crop your screenshots as needed.  
+Update the file paths if you move the images.
+
+\*\*Note: Delete this note and the paragraphs above when you finalize your
