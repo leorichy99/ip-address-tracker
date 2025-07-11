@@ -2,11 +2,8 @@
 
 ## App Preview
 
-<div align="center">
-  <img src="./public/desktop-preview.png" alt="Desktop Preview" width="600" />
-  <br>
-  <img src="./public/mobile-preview.png" alt="Mobile Preview" width="250" />
-</div>
+![](./public/desktop-preview.png)
+![](./public/mobile-preview.png)
 
 ## Overview
 
