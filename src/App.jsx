@@ -10,13 +10,15 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // let apikey = 'at_z75XvocfqEDHLD1CLibbcnEzJZniH';
+
 
   // Validate IP address or domain
   const isValidInput = (input) => {
     // Simple regex for IPv4, IPv6, or domain
     const ipv4 = /^(\d{1,3}\.){3}\d{1,3}$/;
     const ipv6 = /^([\da-fA-F]{0,4}:){2,7}[\da-fA-F]{0,4}$/;
-    const domain = /^(?!-)[A-Za-z0-9-]{1,63}(?<!-)\.[A-Za-z]{2,6}$/;
+    const domain = /^(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\.[A-Za-z0-9-]{1,63})*\.[A-Za-z]{2,}$/;
     return ipv4.test(input) || ipv6.test(input) || domain.test(input);
   };
 
@@ -25,7 +27,15 @@ function App() {
     setLoading(true);
     setError("");
     let url = `https://geo.ipify.org/api/v2/country,city?apiKey=${import.meta.env.VITE_IPIFY_API_KEY}`;
-    if (query) url += `&ipAddress=${query}`;
+    if (query) {
+      if (isValidInput(query)) {
+        if (/^(\d{1,3}\.){3}\d{1,3}$/.test(query) || /^([\da-fA-F]{0,4}:){2,7}[\da-fA-F]{0,4}$/.test(query)) {
+          url += `&ipAddress=${query}`;
+        } else {
+          url += `&domain=${query}`;
+        }
+      }
+    }
     fetch(url)
       .then(response => response.json())
       .then(data => {
@@ -71,10 +81,10 @@ function App() {
       <div className="relative w-full flex-shrink-0">
         {/* search bar */}
         <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center p-4 bg-[url(/pattern-bg-desktop.png)] bg-cover min-h-48 sm:min-h-40 md:min-h-48">
-          <h2 className="text-center text-2xl sm:text-3xl font-bold">IP Address Tracker</h2>
-          <div className="mt-4 flex justify-center w-full gap-0">
+          <h2 className="text-center text-2xl text-white sm:text-3xl font-bold">IP Address Tracker</h2>
+          <div className="mt-4 flex justify-center w-full gap-0 px-2 sm:p-0">
             <input
-              className="p-2 bg-white text-gray-900 outline-none rounded-tl-sm rounded-bl-sm w-1/2 md:w-1/4 min-w-0 transition-all duration-200 placeholder-gray-500"
+              className="p-2 bg-white text-gray-900 outline-none rounded-tl-sm rounded-bl-sm w-full sm:w-1/2 md:w-1/4 min-w-0 transition-all duration-200 placeholder-gray-500"
               type="text"
               name="search"
               id="search"
@@ -82,8 +92,12 @@ function App() {
               value={search}
               autoComplete="off"
               onChange={e => {
-                setSearch(e.target.value);
+                const value = e.target.value;
+                setSearch(value);
                 setError("");
+                if (value.trim() === "") {
+                  fetchIpInfo(); // Reset info when input is cleared
+                }
               }}
               style={{ border: "none" }} // Remove border
             />
@@ -114,22 +128,22 @@ function App() {
             >
               {/*ip address*/}
               <span className="block w-full sm:w-auto text-center sm:text-left">
-                <h2 className="text-black text-[10px] sm:text-xs tracking-widest">IP ADDRESS</h2>
+                <h2 className="text-gray-900 text-[10px] sm:text-xs tracking-widest">IP ADDRESS</h2>
                 <h2 className="text-black text-lg sm:text-2xl font-bold break-all">{ipInfo?.ip || "-"}</h2>
               </span>
               {/*location*/}
               <span className="block w-full sm:w-auto text-center sm:text-left">
-                <h2 className="text-black text-[10px] sm:text-xs tracking-widest">LOCATION</h2>
+                <h2 className="text-gray-900 text-[10px] sm:text-xs tracking-widest">LOCATION</h2>
                 <h2 className="text-black text-base sm:text-xl font-bold break-all">{ipInfo ? `${ipInfo.location.city}, ${ipInfo.location.region}, ${ipInfo.location.country}` : "-"}</h2>
               </span>
               {/*TIMEZONE*/}
               <span className="block w-full sm:w-auto text-center sm:text-left">
-                <h2 className="text-black text-[10px] sm:text-xs tracking-widest">TIMEZONE</h2>
+                <h2 className="text-gray-900 text-[10px] sm:text-xs tracking-widest">TIMEZONE</h2>
                 <h2 className="text-black text-base sm:text-xl font-bold">{ipInfo?.location?.timezone ? `UTC ${ipInfo.location.timezone}` : "-"}</h2>
               </span>
               {/*ISP*/}
               <span className="block w-full sm:w-auto text-center sm:text-left">
-                <h2 className="text-black text-[10px] sm:text-xs tracking-widest">ISP</h2>
+                <h2 className="text-gray-900 text-[10px] sm:text-xs tracking-widest">ISP</h2>
                 <h2 className="text-black text-base sm:text-xl font-bold break-all">{ipInfo?.isp || "-"}</h2>
               </span>
             </div>
@@ -140,7 +154,7 @@ function App() {
       {/* map section */}
       <div className="flex-1 w-full relative z-10 flex">
         {error ? (
-          <div className="flex justify-center items-center h-full w-full">
+          <div className="flex justify-center items-center h-full w-full p-4">
             <Alert
               message="Error"
               description={error}
