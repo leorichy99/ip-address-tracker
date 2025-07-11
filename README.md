@@ -1,6 +1,12 @@
 # IP Address Tracker
 
-![Design preview for the IP Address Tracker coding challenge](./design/desktop-preview.jpg)
+## App Preview
+
+<div align="center">
+  <img src="./public/desktop-preview.png" alt="Desktop Preview" width="600" />
+  <br>
+  <img src="./public/mobile-preview.png" alt="Mobile Preview" width="250" />
+</div>
 
 ## Overview
 
