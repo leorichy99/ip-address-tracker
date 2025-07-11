@@ -2,8 +2,8 @@
 
 ## App Preview
 
-![](./public/desktop-preview.png)
-![](./public/mobile-preview.png)
+![](./public/desktop-preview.jpg)
+![](./public/mobile-design.jpg)
 
 ## Overview
 
