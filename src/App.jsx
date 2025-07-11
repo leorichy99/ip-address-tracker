@@ -10,7 +10,6 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // let apikey = 'at_z75XvocfqEDHLD1CLibbcnEzJZniH';
 
 
   // Validate IP address or domain
@@ -73,14 +72,13 @@ function App() {
     fetchIpInfo(search.trim());
   };
 
-  // Add a loading spinner component (can be placed above App or inside App)
 
   return (
     <div className="w-full min-h-screen flex flex-col">
       {/* searchBar and ipinfo section */}
       <div className="relative w-full flex-shrink-0">
         {/* search bar */}
-        <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center p-4 bg-[url(/pattern-bg-desktop.png)] bg-cover min-h-48 sm:min-h-40 md:min-h-48">
+        <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center p-4 bg-[url(/pattern-bg-mobile.png)] sm:bg-[url(/pattern-bg-desktop.png)] bg-cover min-h-48 sm:min-h-40 md:min-h-48">
           <h2 className="text-center text-2xl text-white sm:text-3xl font-bold">IP Address Tracker</h2>
           <div className="mt-4 flex justify-center w-full gap-0 px-2 sm:p-0">
             <input
@@ -99,7 +97,7 @@ function App() {
                   fetchIpInfo(); // Reset info when input is cleared
                 }
               }}
-              style={{ border: "none" }} // Remove border
+              style={{ border: "none" }}
             />
             <button
               type="submit"
@@ -127,24 +125,45 @@ function App() {
               style={{ pointerEvents: 'auto' }}
             >
               {/*ip address*/}
-              <span className="block w-full sm:w-auto text-center sm:text-left">
-                <h2 className="text-gray-900 text-[10px] sm:text-xs tracking-widest">IP ADDRESS</h2>
-                <h2 className="text-black text-lg sm:text-2xl font-bold break-all">{ipInfo?.ip || "-"}</h2>
+              <span className="block w-full md:w-auto text-center md:text-left">
+                <h2 className="text-gray-600 text-[10px] tracking-widest uppercase">IP ADDRESS</h2>
+                <h2 className="text-black text-lg md:text-xl font-bold break-all">{ipInfo?.ip || "-"}</h2>
               </span>
+              {/* Separator */}
+              <span className="hidden md:inline-block h-12 border-l border-gray-200 mx-1"></span>
               {/*location*/}
-              <span className="block w-full sm:w-auto text-center sm:text-left">
-                <h2 className="text-gray-900 text-[10px] sm:text-xs tracking-widest">LOCATION</h2>
-                <h2 className="text-black text-base sm:text-xl font-bold break-all">{ipInfo ? `${ipInfo.location.city}, ${ipInfo.location.region}, ${ipInfo.location.country}` : "-"}</h2>
+              <span className="block w-full md:w-1/4 text-center md:text-left">
+                <h2 className="text-gray-600 text-xs tracking-widest uppercase mb-1">LOCATION</h2>
+                <h2 className="text-black text-base md:text-xl font-bold break-all leading-tight">
+                  {ipInfo
+                    ? <>
+                        {ipInfo.location.city},<br />
+                        {ipInfo.location.region},<br />
+                        {ipInfo.location.postalCode}
+                        {ipInfo.location.country}
+                      </>
+                    : "-"}
+                </h2>
               </span>
+              {/* Separator */}
+              <span className="hidden md:inline-block h-12 border-l border-gray-200 mx-1"></span>
               {/*TIMEZONE*/}
-              <span className="block w-full sm:w-auto text-center sm:text-left">
-                <h2 className="text-gray-900 text-[10px] sm:text-xs tracking-widest">TIMEZONE</h2>
-                <h2 className="text-black text-base sm:text-xl font-bold">{ipInfo?.location?.timezone ? `UTC ${ipInfo.location.timezone}` : "-"}</h2>
+              <span className="block w-full md:w-auto text-center md:text-left">
+                <h2 className="text-gray-600 text-[10px] tracking-widest uppercase">TIMEZONE</h2>
+                <h2 className="text-black text-base md:text-xl font-bold">{ipInfo?.location?.timezone ? `UTC ${ipInfo.location.timezone}` : "-"}</h2>
               </span>
+              {/* Separator */}
+              <span className="hidden md:inline-block h-12 border-l border-gray-200 mx-1"></span>
               {/*ISP*/}
-              <span className="block w-full sm:w-auto text-center sm:text-left">
-                <h2 className="text-gray-900 text-[10px] sm:text-xs tracking-widest">ISP</h2>
-                <h2 className="text-black text-base sm:text-xl font-bold break-all">{ipInfo?.isp || "-"}</h2>
+              <span className="block w-full md:w-1/4 text-center md:text-left">
+                <h2 className="text-gray-600 text-xs tracking-widest uppercase mb-1">ISP</h2>
+                <h2 className="text-black text-base md:text-xl font-bold break-all leading-tight">
+                  {ipInfo?.isp
+                    ? ipInfo.isp.split(' ').map((word, i) => (
+                        <span key={i}>{word}<br /></span>
+                      ))
+                    : "-"}
+                </h2>
               </span>
             </div>
           </div>
