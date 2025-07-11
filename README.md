@@ -4,6 +4,7 @@
 
 ![](./public/desktop-preview.jpg)
 ![](./public/mobile-design.jpg)
+![](./public/active-states.jpg)
 
 ## Overview
 
